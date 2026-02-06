@@ -1,0 +1,163 @@
+.container {
+    display: flex;
+    min-height: 100vh;
+    background: #F0F7FF;
+}
+
+.main {
+    flex: 1;
+    margin-left: 240px;
+    padding: 1.5rem 2rem;
+}
+
+.header {
+    margin-bottom: 2rem;
+}
+
+.pageTitle {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #1E293B;
+    margin-bottom: 0.5rem;
+}
+
+.subtitle {
+    color: #64748B;
+    font-size: 1rem;
+}
+
+.unitsGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.5rem;
+}
+
+.unitCard {
+    background: white;
+    border-radius: 16px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.unitCard:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    border-color: #4A6CF7;
+}
+
+.unitCard.completed {
+    background: linear-gradient(135deg, #F0FDF4 0%, #DCFCE7 100%);
+    border-color: #22C55E;
+}
+
+.unitHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.moduleTag {
+    background: linear-gradient(135deg, #4A6CF7 0%, #6366F1 100%);
+    color: white;
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+}
+
+.checkMark {
+    width: 24px;
+    height: 24px;
+    background: #22C55E;
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 0.8rem;
+    font-weight: bold;
+}
+
+.unitTitle {
+    font-size: 0.9rem;
+    color: #64748B;
+    margin-bottom: 0.25rem;
+}
+
+.unitName {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #1E293B;
+    margin-bottom: 1rem;
+}
+
+.progressWrapper {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+}
+
+.progressBar {
+    flex: 1;
+    height: 8px;
+    background: #E2E8F0;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.progressFill {
+    height: 100%;
+    background: linear-gradient(90deg, #4A6CF7 0%, #6366F1 100%);
+    border-radius: 4px;
+    transition: width 0.3s ease;
+}
+
+.unitCard.completed .progressFill {
+    background: linear-gradient(90deg, #22C55E 0%, #16A34A 100%);
+}
+
+.progressText {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #4A6CF7;
+    min-width: 40px;
+}
+
+.unitCard.completed .progressText {
+    color: #22C55E;
+}
+
+.startBtn {
+    width: 100%;
+    padding: 0.75rem;
+    background: linear-gradient(135deg, #4A6CF7 0%, #6366F1 100%);
+    color: white;
+    font-weight: 600;
+    border-radius: 10px;
+    transition: all 0.2s ease;
+}
+
+.startBtn:hover {
+    transform: scale(1.02);
+    box-shadow: 0 4px 12px rgba(74, 108, 247, 0.4);
+}
+
+.unitCard.completed .startBtn {
+    background: linear-gradient(135deg, #22C55E 0%, #16A34A 100%);
+}
+
+@media (max-width: 768px) {
+    .main {
+        margin-left: 200px;
+        padding: 1rem;
+    }
+
+    .unitsGrid {
+        grid-template-columns: 1fr;
+    }
+}
