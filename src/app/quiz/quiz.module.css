@@ -26,7 +26,53 @@
     margin-bottom: 1rem;
 }
 
+/* 학년 탭 */
+.gradeTabs {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.gradeTab {
+    padding: 0.5rem 1.25rem;
+    border-radius: 20px;
+    background: white;
+    color: #64748B;
+    font-weight: 600;
+    font-size: 0.9rem;
+    border: 2px solid #E2E8F0;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.gradeTab:hover {
+    border-color: #F59E0B;
+    color: #F59E0B;
+}
+
+.gradeTab.activeTab {
+    background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
+    color: white;
+    border-color: transparent;
+}
+
+/* 로딩 & 빈 상태 */
+.loading,
+.noQuiz {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 200px;
+    font-size: 1.2rem;
+    color: #64748B;
+    background: white;
+    border-radius: 20px;
+    width: 100%;
+    max-width: 700px;
+}
+
 .progress {
+
     display: flex;
     align-items: center;
     gap: 1rem;

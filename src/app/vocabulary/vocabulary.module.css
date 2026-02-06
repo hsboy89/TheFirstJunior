@@ -24,12 +24,74 @@
 .subtitle {
     color: #64748B;
     font-size: 1rem;
-    margin-bottom: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+/* 학년 탭 */
+.gradeTabs {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.gradeTab {
+    padding: 0.5rem 1.25rem;
+    border-radius: 20px;
+    background: white;
+    color: #64748B;
+    font-weight: 600;
+    font-size: 0.9rem;
+    border: 2px solid #E2E8F0;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.gradeTab:hover {
+    border-color: #4A6CF7;
+    color: #4A6CF7;
+}
+
+.gradeTab.activeTab {
+    background: linear-gradient(135deg, #4A6CF7 0%, #6366F1 100%);
+    color: white;
+    border-color: transparent;
+}
+
+/* 유닛 셀렉터 */
+.unitSelector {
+    margin-bottom: 1rem;
+}
+
+.unitSelect {
+    padding: 0.75rem 1rem;
+    background: white;
+    border: 2px solid #E2E8F0;
+    border-radius: 12px;
+    font-size: 1rem;
+    color: #1E293B;
+    min-width: 300px;
+    cursor: pointer;
+}
+
+.unitSelect:focus {
+    outline: none;
+    border-color: #4A6CF7;
+}
+
+/* 로딩 */
+.loading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 200px;
+    font-size: 1.2rem;
+    color: #64748B;
 }
 
 .stats {
     display: flex;
     gap: 1rem;
+    margin-top: 1rem;
 }
 
 .statBox {
@@ -42,9 +104,13 @@
 
 .statValue {
     display: block;
-    font-size: 1.5rem;
+    font-size: 1.25rem;
     font-weight: 700;
     color: #4A6CF7;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 150px;
 }
 
 .statLabel {

@@ -1,42 +1,61 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Sidebar from '@/components/Sidebar';
+import { supabase, Quiz } from '@/lib/supabase';
 import styles from './quiz.module.css';
 
-// Sample quiz data
-const sampleQuiz = [
-    {
-        id: 1,
-        question: 'What does "adventure" mean in Korean?',
-        options: ['여행', '모험', '운동', '공부'],
-        answer: '모험',
-    },
-    {
-        id: 2,
-        question: 'Choose the correct word: The cat is very ___. It always wants to know new things.',
-        options: ['sleepy', 'curious', 'angry', 'sad'],
-        answer: 'curious',
-    },
-    {
-        id: 3,
-        question: 'Which sentence is correct?',
-        options: [
-            'She go to school yesterday.',
-            'She went to school yesterday.',
-            'She going to school yesterday.',
-            'She goes to school yesterday.',
-        ],
-        answer: 'She went to school yesterday.',
-    },
+interface QuizWithUnit extends Quiz {
+    units?: {
+        title: string;
+        order_no: number;
+    };
+}
+
+const grades = [
+    { id: 1, name: 'Grade 3', label: '3학년' },
+    { id: 2, name: 'Grade 4', label: '4학년' },
+    { id: 3, name: 'Grade 5', label: '5학년' },
+    { id: 4, name: 'Grade 6', label: '6학년' },
 ];
 
 export default function QuizPage() {
+    const [selectedGrade, setSelectedGrade] = useState(1);
+    const [quizzes, setQuizzes] = useState<QuizWithUnit[]>([]);
+    const [loading, setLoading] = useState(true);
     const [currentQuestion, setCurrentQuestion] = useState(0);
     const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
     const [score, setScore] = useState(0);
     const [showResult, setShowResult] = useState(false);
     const [isAnswered, setIsAnswered] = useState(false);
+
+    useEffect(() => {
+        fetchQuizzes();
+    }, [selectedGrade]);
+
+    const fetchQuizzes = async () => {
+        setLoading(true);
+        setCurrentQuestion(0);
+        setScore(0);
+        setShowResult(false);
+        setSelectedAnswer(null);
+        setIsAnswered(false);
+
+        const { data, error } = await supabase
+            .from('quizzes')
+            .select(`
+                *,
+                units!inner (title, order_no, level_id)
+            `)
+            .eq('units.level_id', selectedGrade)
+            .order('id')
+            .limit(10);
+
+        if (!error && data) {
+            setQuizzes(data);
+        }
+        setLoading(false);
+    };
 
     const handleAnswerSelect = (answer: string) => {
         if (isAnswered) return;
@@ -44,13 +63,16 @@ export default function QuizPage() {
         setSelectedAnswer(answer);
         setIsAnswered(true);
 
-        if (answer === sampleQuiz[currentQuestion].answer) {
+        const correctAnswer = quizzes[currentQuestion].answer.toLowerCase();
+        if (answer.toLowerCase() === correctAnswer ||
+            answer.toLowerCase() === 'true' && correctAnswer === 'true' ||
+            answer.toLowerCase() === 'false' && correctAnswer === 'false') {
             setScore(score + 1);
         }
     };
 
     const handleNext = () => {
-        if (currentQuestion < sampleQuiz.length - 1) {
+        if (currentQuestion < quizzes.length - 1) {
             setCurrentQuestion(currentQuestion + 1);
             setSelectedAnswer(null);
             setIsAnswered(false);
@@ -60,14 +82,13 @@ export default function QuizPage() {
     };
 
     const handleRestart = () => {
-        setCurrentQuestion(0);
-        setSelectedAnswer(null);
-        setScore(0);
-        setShowResult(false);
-        setIsAnswered(false);
+        fetchQuizzes();
     };
 
-    const current = sampleQuiz[currentQuestion];
+    const current = quizzes[currentQuestion];
+    const options = current?.options?.length > 0
+        ? current.options
+        : ['True', 'False'];
 
     return (
         <div className={styles.container}>
@@ -76,31 +97,51 @@ export default function QuizPage() {
             <main className={styles.main}>
                 <header className={styles.header}>
                     <h1 className={styles.pageTitle}>🏆 도전! 퀴즈왕</h1>
-                    <div className={styles.progress}>
-                        <span>문제 {currentQuestion + 1} / {sampleQuiz.length}</span>
-                        <div className={styles.progressBar}>
-                            <div
-                                className={styles.progressFill}
-                                style={{ width: `${((currentQuestion + 1) / sampleQuiz.length) * 100}%` }}
-                            ></div>
-                        </div>
+
+                    {/* 학년 선택 탭 */}
+                    <div className={styles.gradeTabs}>
+                        {grades.map((grade) => (
+                            <button
+                                key={grade.id}
+                                className={`${styles.gradeTab} ${selectedGrade === grade.id ? styles.activeTab : ''}`}
+                                onClick={() => setSelectedGrade(grade.id)}
+                            >
+                                {grade.label}
+                            </button>
+                        ))}
                     </div>
+
+                    {!loading && quizzes.length > 0 && !showResult && (
+                        <div className={styles.progress}>
+                            <span>문제 {currentQuestion + 1} / {quizzes.length}</span>
+                            <div className={styles.progressBar}>
+                                <div
+                                    className={styles.progressFill}
+                                    style={{ width: `${((currentQuestion + 1) / quizzes.length) * 100}%` }}
+                                ></div>
+                            </div>
+                        </div>
+                    )}
                 </header>
 
-                {!showResult ? (
+                {loading ? (
+                    <div className={styles.loading}>로딩 중...</div>
+                ) : quizzes.length === 0 ? (
+                    <div className={styles.noQuiz}>이 학년에는 아직 퀴즈가 없습니다.</div>
+                ) : !showResult ? (
                     <div className={styles.quizCard}>
                         <div className={styles.questionNumber}>Q{currentQuestion + 1}</div>
                         <h2 className={styles.question}>{current.question}</h2>
 
                         <div className={styles.options}>
-                            {current.options.map((option, index) => (
+                            {options.map((option: string, index: number) => (
                                 <button
                                     key={index}
                                     className={`${styles.optionBtn} 
-                    ${selectedAnswer === option ? styles.selected : ''} 
-                    ${isAnswered && option === current.answer ? styles.correct : ''}
-                    ${isAnswered && selectedAnswer === option && option !== current.answer ? styles.wrong : ''}
-                  `}
+                                        ${selectedAnswer === option ? styles.selected : ''} 
+                                        ${isAnswered && option.toLowerCase() === current.answer.toLowerCase() ? styles.correct : ''}
+                                        ${isAnswered && selectedAnswer === option && option.toLowerCase() !== current.answer.toLowerCase() ? styles.wrong : ''}
+                                    `}
                                     onClick={() => handleAnswerSelect(option)}
                                     disabled={isAnswered}
                                 >
@@ -112,13 +153,13 @@ export default function QuizPage() {
 
                         {isAnswered && (
                             <div className={styles.feedback}>
-                                {selectedAnswer === current.answer ? (
+                                {selectedAnswer?.toLowerCase() === current.answer.toLowerCase() ? (
                                     <p className={styles.correctFeedback}>🎉 정답입니다! +10 XP</p>
                                 ) : (
                                     <p className={styles.wrongFeedback}>❌ 아쉬워요! 정답: {current.answer}</p>
                                 )}
                                 <button className={styles.nextBtn} onClick={handleNext}>
-                                    {currentQuestion < sampleQuiz.length - 1 ? '다음 문제 →' : '결과 보기'}
+                                    {currentQuestion < quizzes.length - 1 ? '다음 문제 →' : '결과 보기'}
                                 </button>
                             </div>
                         )}
@@ -126,11 +167,11 @@ export default function QuizPage() {
                 ) : (
                     <div className={styles.resultCard}>
                         <div className={styles.resultEmoji}>
-                            {score === sampleQuiz.length ? '🏆' : score >= sampleQuiz.length / 2 ? '🎉' : '💪'}
+                            {score === quizzes.length ? '🏆' : score >= quizzes.length / 2 ? '🎉' : '💪'}
                         </div>
                         <h2 className={styles.resultTitle}>퀴즈 완료!</h2>
                         <p className={styles.resultScore}>
-                            {sampleQuiz.length}문제 중 <strong>{score}문제</strong> 정답!
+                            {quizzes.length}문제 중 <strong>{score}문제</strong> 정답!
                         </p>
                         <p className={styles.resultXP}>획득 XP: +{score * 10}</p>
                         <button className={styles.restartBtn} onClick={handleRestart}>
