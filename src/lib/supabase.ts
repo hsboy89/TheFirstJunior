@@ -1,10 +1,15 @@
 import { createClient } from '@supabase/supabase-js';
 
-// 환경 변수 체크 및 기본값 설정 (빌드 타임 에러 방지)
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co';
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placeholder';
+// 환경 변수 로드
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+// Vercel 빌드 시 환경 변수가 없을 경우를 대비한 예외 처리
+// (실제 런타임에는 환경 변수가 있어야 정상 작동함)
+const url = supabaseUrl || 'https://placeholder.supabase.co';
+const key = supabaseAnonKey || 'placeholder';
+
+export const supabase = createClient(url, key);
 
 // Types for database tables
 export interface Level {
